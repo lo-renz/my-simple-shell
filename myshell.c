@@ -1,3 +1,18 @@
+/*
+Student Name: Renso Guilalas
+Student ID: 21422182
+********************************************************************
+version: 1.0
+date:    December 2003
+author:  Ian G Graham
+School of Information Technology
+Griffith University, Gold Coast
+ian.graham@griffith.edu.au
+copyright (c) Ian G Graham, 2003. All rights reserved.
+This code can be used for teaching purposes, but no warranty,
+explicit or implicit, is provided.
+*******************************************************************/
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,9 +20,27 @@
 #define MAX_BUFFER 1024                        // max line buffer
 #define MAX_ARGS 64                            // max # args
 #define SEPARATORS " \t\n"                     // token separators
+extern char ** environ; // array of char *, terminated by NULL // from lab_04 
+
+// print the curretn working directory.
+void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-getcwd-get-path-name-working-directory
+    char d[MAX_BUFFER];
+    getcwd(d, sizeof(d));
+    printf("%s\n", d);
+}
 
 // change the current default directory.
-void cd() {
+void cd(int argc, char ** args) {
+    char dir[MAX_BUFFER];
+
+    // if no directory is specified then the current directory is printed.
+    if(argc == 1) {
+        pwd();
+    }
+
+    // if a directory is specified then change to that directory.
+    // TODO: change the cwd to the specified directory.
+    //       change the PWD environment string. For this you will need to study the chdir(), getcwd(), setenv() functions.
 }
 
 // clear the screen.
@@ -16,20 +49,28 @@ void clr() {
 }
 
 // list the contents of directory.
-void dir(char ** args) {
+void dir(int argc, char ** args) {
     char dir[MAX_BUFFER];
-    strcpy(dir, args[1]); // getting the directory from the args.
+    if(argc == 1) {
+        strcpy(dir, ".");
+    }
+    else {
+        strcpy(dir, args[1]); // getting the directory from the args.
+    }
     char command[MAX_BUFFER] = "ls -al ";
     strcat(command, dir);
     system(command);
 }
 
 // list all the environment strings.
-void environ() {
+void environ_cmd() {
+    for(int i = 0; environ[i] != NULL; ++i) {
+        printf("%s\n", environ[i]);
+    }
 }
 
 // echo on the display followed by a new line.
-void echo(char ** args) {
+void echo(int argc, char ** args) {
     char ** output = args;
     output += 1;
     while(*output) { // while there are still args after "echo", print them.
@@ -48,12 +89,6 @@ void pause_cmd() {
     while(getchar() != '\n'); // waiting for the user to press "enter"
 }
 
-// print the curretn working directory.
-void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-getcwd-get-path-name-working-directory
-    char d[1024];
-    getcwd(d, sizeof(d));
-    printf("%s\n", d);
-}
 
 
 int main (int argc, char ** argv)
@@ -80,7 +115,7 @@ int main (int argc, char ** argv)
             if (args[0]) {
 
                 if (!strcmp(args[0], "cd")) { // "cd" command
-                    cd();
+                    cd(argc, args);
                     continue;
                 }
 
@@ -90,17 +125,17 @@ int main (int argc, char ** argv)
                 }
 
                 if (!strcmp(args[0], "dir")) { // "dir" command
-                    dir(args);
+                    dir(argc, args);
                     continue;
                 }
 
                 if (!strcmp(args[0], "environ")) { // "environ" command
-                    environ();
+                    environ_cmd();
                     continue;
                 }
 
                 if (!strcmp(args[0], "echo")) { // "echo" command
-                    echo(args);
+                    echo(argc, args);
                     continue;
                 }
 
