@@ -20,7 +20,7 @@ explicit or implicit, is provided.
 #define MAX_BUFFER 1024                        // max line buffer
 #define MAX_ARGS 64                            // max # args
 #define SEPARATORS " \t\n"                     // token separators
-extern char ** environ; // array of char *, terminated by NULL // from lab_04 
+extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
 
 // print the curretn working directory.
 void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-getcwd-get-path-name-working-directory
@@ -30,17 +30,15 @@ void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-
 }
 
 // change the current default directory.
-void cd(int argc, char ** args) {
-    char dir[MAX_BUFFER];
-
-    // if no directory is specified then the current directory is printed.
-    if(argc == 1) {
-        pwd();
-    }
+void cd_cmd(int argc, char ** args) {
 
     // if a directory is specified then change to that directory.
-    // TODO: change the cwd to the specified directory.
-    //       change the PWD environment string. For this you will need to study the chdir(), getcwd(), setenv() functions.
+    char dir[MAX_BUFFER];
+    char buffer[MAX_BUFFER];
+    strcpy(dir, args[1]);
+    chdir(dir);
+    setenv("PWD", dir, 1);
+    pwd();
 }
 
 // clear the screen.
@@ -90,79 +88,78 @@ void pause_cmd() {
 }
 
 
-
 int main (int argc, char ** argv)
 {
     char buf[MAX_BUFFER];                      // line buffer
     char * args[MAX_ARGS];                     // pointers to arg strings
     char ** arg;                               // working pointer thru args
-    char * prompt = "-> " ;                     // shell prompt
+    char * prompt = "-> " ;                    // shell prompt
     /* keep reading input until "quit" command or eof of redirected input */
 
-    while (!feof(stdin)) { 
+    while(!feof(stdin)) { 
         /* get command line from input */
         fputs (prompt, stdout); // write prompt
 
-        if (fgets (buf, MAX_BUFFER, stdin )) { // read a line
+        if(fgets (buf, MAX_BUFFER, stdin )) { // read a line
             /* tokenize the input into args array */
             arg = args;
             *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
 
-            while ((*arg++ = strtok(NULL,SEPARATORS)));
+            while((*arg++ = strtok(NULL, SEPARATORS)));
 
             // last entry will be NULL 
             // this block of code is for the internal commands.
-            if (args[0]) {
+            if(args[0]) {
 
-                if (!strcmp(args[0], "cd")) { // "cd" command
-                    cd(argc, args);
+                if(!strcmp(args[0], "cd")) { // "cd" command
+                    cd_cmd(argc, args);
                     continue;
                 }
 
-                if (!strcmp(args[0], "clr")) { // "clear" command
+                if(!strcmp(args[0], "clr")) { // "clear" command
                     clr();
                     continue;
                 }
 
-                if (!strcmp(args[0], "dir")) { // "dir" command
+                if(!strcmp(args[0], "dir")) { // "dir" command
                     dir(argc, args);
                     continue;
                 }
 
-                if (!strcmp(args[0], "environ")) { // "environ" command
+                if(!strcmp(args[0], "environ")) { // "environ" command
                     environ_cmd();
                     continue;
                 }
 
-                if (!strcmp(args[0], "echo")) { // "echo" command
+                if(!strcmp(args[0], "echo")) { // "echo" command
                     echo(argc, args);
                     continue;
                 }
 
-                if (!strcmp(args[0], "help")) { // "help" command
+                if(!strcmp(args[0], "help")) { // "help" command
                     help();
                     continue;
                 }
 
-                if (!strcmp(args[0], "pause")) { // "pause" command
+                if(!strcmp(args[0], "pause")) { // "pause" command
                     pause_cmd();
                     continue;
                 }
 
-                if (!strcmp(args[0], "pwd")) { // "pwd" command
+                if(!strcmp(args[0], "pwd")) { // "pwd" command
                     pwd();
                     continue;
                 }
 
-                if (!strcmp(args[0],"quit")) {  // "quit" command
+                if(!strcmp(args[0],"quit")) {  // "quit" command
                     break;
                 }
 
                 /* else pass command onto OS (or in this instance, print them out) */
                 arg = args;
-                while (*arg) {
+                while(*arg) {
                     fprintf(stdout,"%s ",*arg++);
-                    fputs ("\n", stdout);
+                    fputs("\n", stdout);
                 }
             }
         }
