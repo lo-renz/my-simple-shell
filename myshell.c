@@ -37,7 +37,10 @@ void cd_cmd(int argc, char ** args) {
     char buffer[MAX_BUFFER];
     strcpy(dir, args[1]);
     chdir(dir);
-    setenv("PWD", dir, 1);
+    cwd[MAX_BUFFER];
+    getcwd(cwd, sizeof(cwd));
+    setenv("PWD", cwd, 1);
+    //setenv("PWD", dir, 1);
     pwd();
 }
 
