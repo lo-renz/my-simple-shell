@@ -37,7 +37,11 @@ void cd_cmd(int argc, char ** args) {
     char buffer[MAX_BUFFER];
     strcpy(dir, args[1]);
     chdir(dir);
-    setenv("PWD", dir, 1);
+
+    // This changes the environment after changing directory.
+    char newdir[MAX_BUFFER];
+    getcwd(newdir, sizeof(newdir));
+    setenv("PWD", newdir, 1);
     pwd();
 }
 
