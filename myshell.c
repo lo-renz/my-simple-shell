@@ -30,18 +30,22 @@ void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-
 }
 
 // change the current default directory.
-void cd_cmd(int argc, char ** args) {
+void cd_cmd(char ** args) {
 
-    // if a directory is specified then change to that directory.
     char dir[MAX_BUFFER];
-    char buffer[MAX_BUFFER];
-    strcpy(dir, args[1]);
-    chdir(dir);
+    if(args[1] == NULL) { // if no directory is specified then print he cwd.
+        strcpy(dir, ".");
+    }
+    else { // if a directory is specified then change to that directory.
+        strcpy(dir, args[1]);
+        chdir(dir);
 
-    // This changes the environment after changing directory.
-    char newdir[MAX_BUFFER];
-    getcwd(newdir, sizeof(newdir));
-    setenv("PWD", newdir, 1);
+        // This changes the environment after changing directory.
+        char newdir[MAX_BUFFER];
+        getcwd(newdir, sizeof(newdir));
+        setenv("PWD", newdir, 1);
+    }
+
     pwd();
 }
 
@@ -110,13 +114,13 @@ int main (int argc, char ** argv)
             *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
 
             while((*arg++ = strtok(NULL, SEPARATORS)));
+            // last entry will be NULL
 
-            // last entry will be NULL 
             // this block of code is for the internal commands.
             if(args[0]) {
 
                 if(!strcmp(args[0], "cd")) { // "cd" command
-                    cd_cmd(argc, args);
+                    cd_cmd(args);
                     continue;
                 }
 
