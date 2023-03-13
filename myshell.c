@@ -17,106 +17,39 @@ explicit or implicit, is provided.
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include "myshell.h"
 #define MAX_BUFFER 1024                        // max line buffer
 #define MAX_ARGS 64                            // max # args
 #define SEPARATORS " \t\n"                     // token separators
 extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
-
-// print the curretn working directory.
-void pwd() { // code from https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-getcwd-get-path-name-working-directory
-    char d[MAX_BUFFER];
-    getcwd(d, sizeof(d));
-    printf("%s\n", d);
-}
-
-// change the current default directory.
-void cd_cmd(char ** args) {
-
-    char dir[MAX_BUFFER];
-    if(args[1] == NULL) { // if no directory is specified then print he cwd.
-        strcpy(dir, ".");
-    }
-    else { // if a directory is specified then change to that directory.
-        strcpy(dir, args[1]);
-        chdir(dir);
-
-        // This changes the environment after changing directory.
-        char newdir[MAX_BUFFER];
-        getcwd(newdir, sizeof(newdir));
-        setenv("PWD", newdir, 1);
-    }
-
-    pwd();
-}
-
-// clear the screen.
-void clr() {
-    system("clear");
-}
-
-// list the contents of directory.
-void dir(int argc, char ** args) {
-    char dir[MAX_BUFFER];
-    if(argc == 1) {
-        strcpy(dir, ".");
-    }
-    else {
-        strcpy(dir, args[1]); // getting the directory from the args.
-    }
-    char command[MAX_BUFFER] = "ls -al ";
-    strcat(command, dir);
-    system(command);
-}
-
-// list all the environment strings.
-void environ_cmd() {
-    for(int i = 0; environ[i] != NULL; ++i) {
-        printf("%s\n", environ[i]);
-    }
-}
-
-// echo on the display followed by a new line.
-void echo(int argc, char ** args) {
-    char ** output = args;
-    output += 1;
-    while(*output) { // while there are still args after "echo", print them.
-        printf("%s ", *output++);
-    }
-    printf("\n");
-}
-
-// display the user manual using the more filter.
-void help() {
-}
-
-// pause operation of the shell until "Enter" is pressed.
-void pause_cmd() {
-    printf("Press enter to continue...");
-    while(getchar() != '\n'); // waiting for the user to press "enter"
-}
-
 
 int main (int argc, char ** argv)
 {
     char buf[MAX_BUFFER];                      // line buffer
     char * args[MAX_ARGS];                     // pointers to arg strings
     char ** arg;                               // working pointer thru args
-    char * prompt = "-> " ;                    // shell prompt
-    /* keep reading input until "quit" command or eof of redirected input */
+    char prompt[MAX_BUFFER];                    // shell prompt
+    /* keep reading input until "quit" command or EOF of redirected input */
 
-    while(!feof(stdin)) { 
-        /* get command line from input */
-        fputs (prompt, stdout); // write prompt
-
-        if(fgets (buf, MAX_BUFFER, stdin )) { // read a line
-            /* tokenize the input into args array */
+    // to check if there is a batchfile
+    // check if a command line argument is provided
+    if (argc > 1) {
+        // open the batch file
+        FILE *batchfile = fopen(argv[1], "r");
+        if (batchfile == NULL) {
+            perror("Failed to open batchfile");
+            return 1;
+        }
+        // read lines from batchfile until EOF is reached
+        while(fgets(buf, MAX_BUFFER, batchfile)) {
+            // tokenize the input into args array
             arg = args;
             *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
 
-            while((*arg++ = strtok(NULL, SEPARATORS)));
-            // last entry will be NULL
+            while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
 
-            // this block of code is for the internal commands.
+            // internal commands
             if(args[0]) {
 
                 if(!strcmp(args[0], "cd")) { // "cd" command
@@ -163,14 +96,86 @@ int main (int argc, char ** argv)
                     break;
                 }
 
-                /* else pass command onto OS (or in this instance, print them out) */
+                else {
+                    external_cmd(args);
+                    continue;
+                }
+            }
+    }
+    // close the batchfile
+    fclose(batchfile);
+    }
+    else {
+        while(!feof(stdin)) { 
+            /* get command line from input */
+            sprintf(prompt, "%s%s ", getcwd(NULL, 0), " ->"); // adding the cwd to the prompt
+            fputs(prompt, stdout); // write prompt
+
+            if(fgets (buf, MAX_BUFFER, stdin)) { // read a line
+                // tokenize the input into args array
                 arg = args;
-                while(*arg) {
-                    fprintf(stdout,"%s ",*arg++);
-                    fputs("\n", stdout);
+                *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
+
+                while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
+
+                // internal commands
+                if(args[0]) {
+
+                    if(!strcmp(args[0], "cd")) { // "cd" command
+                        cd_cmd(args);
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "clr")) { // "clear" command
+                        clr();
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "dir")) { // "dir" command
+                        dir(argc, args);
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "environ")) { // "environ" command
+                        environ_cmd();
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "echo")) { // "echo" command
+                        echo(argc, args);
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "help")) { // "help" command
+                        help();
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "pause")) { // "pause" command
+                        pause_cmd();
+                        continue;
+                    }
+
+                    if(!strcmp(args[0], "pwd")) { // "pwd" command
+                        pwd();
+                        continue;
+                    }
+
+                    if(!strcmp(args[0],"quit")) {  // "quit" command
+                        break;
+                    }
+
+                    else {
+                        external_cmd(args);
+                        continue;
+                    }
                 }
             }
         }
+        return 0;
     }
-    return 0; 
 }
+
+/*
+References:
+*/
