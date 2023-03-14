@@ -106,5 +106,5 @@ void external_cmd(char ** args) {
 
 /*
 References:
-[1] segmentfault, "Implementing a Shell in C with Piping and External Commands," StackOverflow, Jul. 2021. [Online]. Available: https://stackoverflow.com/questions/68289675/creating-shell-in-c-piping-and-external-commands. [Accessed: Mar. 13, 2023].
+[1] segmentfault, "Creating Shell in C - Piping and External Commands", StackOverflow, Jul. 2021. [Online]. Available: https://stackoverflow.com/questions/68289675/creating-shell-in-c-piping-and-external-commands. [Accessed: Mar. 13, 2023].
 */

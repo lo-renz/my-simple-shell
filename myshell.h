@@ -13,7 +13,7 @@ Student ID: 2142218
 #define SEPARATORS " \t\n"                     // token separators
 extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
 
-void  pwd();
+void pwd();
 void cd_cmd(char ** args);
 void clr();
 void dir(int argc, char ** args);
