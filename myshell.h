@@ -16,9 +16,11 @@ extern char ** environ;                        // array of char *, terminated by
 void pwd();
 void cd_cmd(char ** args);
 void clr();
-void dir(int argc, char ** args);
+void dir(char ** args);
 void environ_cmd();
 void echo();
 void help();
 void pause_cmd();
 void external_cmd();
+void io_redirection(int argc, char ** args);
+void cmds(char ** args, int argc);

@@ -14,6 +14,7 @@ Student ID: 2142218
 #define SEPARATORS " \t\n"                     // token separators
 extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
 
+
 // print the current working directory.
 void pwd() {
     char d[MAX_BUFFER];
@@ -47,9 +48,9 @@ void clr() {
 }
 
 // list the contents of directory.
-void dir(int argc, char ** args) {
+void dir(char ** args) {
     char dir[MAX_BUFFER];
-    if(argc == 1) {
+    if(args[1] == NULL) {
         strcpy(dir, ".");
     }
     else {
@@ -68,7 +69,7 @@ void environ_cmd() {
 }
 
 // echo on the display followed by a new line.
-void echo(int argc, char ** args) {
+void echo(char ** args) {
     char ** output = args;
     output += 1;
     while(*output) { // while there are still args after "echo", print them.
@@ -102,6 +103,125 @@ void external_cmd(char ** args) {
     else{
         waitpid(pid, &status, 0);
     }
+}
+
+/*
+check for I/O redirection
+if I/O redirection is present then execute with I/O redirection
+else execute internal or external commands
+*/
+void io_redirection(int argc, char ** args) {
+     // checking for I/O redirection
+    char * inputfile = NULL;
+    char * outputfile = NULL;
+    int append = 0;
+
+    for(int i = 0; args[i+1]; ++i) { // [1]
+
+        if(!strcmp(args[i], "<")) { // input redirection
+            inputfile = args[i+1];
+            args[i] = NULL;
+            break;
+        }
+        else if(!strcmp(args[i], ">")) { // output redirection by truncating
+            outputfile = args[i+1];
+            args[i] = NULL;
+            break;
+        }
+        else if(!strcmp(args[i], ">>")) { // output redirection by appending
+            outputfile = args[i+1];
+            append = 1;
+            args[i] = NULL;
+            break;
+        }
+    }
+
+    if(inputfile != NULL || outputfile != NULL) { // [1]
+        // executing command with I/O redirection
+        pid_t pid = fork();
+
+        if(pid == -1) {
+            perror("fork error");
+        }
+        else if(pid == 0) {
+            //child process
+            if(inputfile) {
+                // input redirection
+                FILE * fp = fopen(inputfile, "r");
+
+                if(!fp) {
+                    perror("input file open error");
+                    exit(EXIT_FAILURE);
+                }
+
+                dup2(fileno(fp), STDIN_FILENO);
+                fclose(fp);
+            }
+
+            if(outputfile) {
+                // output redirection
+                FILE * fp;
+
+                if(append) {
+                    fp = fopen(outputfile, "a");
+                }
+                else {
+                    fp = fopen(outputfile, "w");
+                }
+
+                if(!fp) {
+                    perror("output file open error");
+                    exit(EXIT_FAILURE);
+                }
+
+                dup2(fileno(fp), STDOUT_FILENO);
+                fclose(fp);
+            }
+
+            // execute command
+            execvp(args[0], args);
+
+            // if execvp returns, there was an error
+            perror(args[0]);
+            exit(EXIT_FAILURE);
+        }
+        else {
+            // parent process
+            int status;
+            waitpid(pid, &status, 0);
+        }
+    }
+    else {
+        // internal commands and external commands
+        cmds(args, argc);
+    }
+}
+
+typedef struct {
+    char * name;
+    void (*func)(char ** argv);
+} Command;
+
+// an array of Command structs for internal commands
+Command internal_cmds[] = {
+    {"pwd", pwd},
+    {"cd", cd_cmd},
+    {"clr", clr},
+    {"dir", dir},
+    {"environ", environ_cmd},
+    {"echo", echo},
+    {"help", help},
+    {"pause", pause_cmd}
+};
+
+void cmds(char ** args, int argc) {
+    for(int i = 0; i < sizeof(internal_cmds) / sizeof(Command); ++i) {
+        if(!(strcmp(args[0], internal_cmds[i].name))) {
+            internal_cmds[i].func(args);
+            return;
+        }
+    }
+    external_cmd(args);
 }
 
 /*
