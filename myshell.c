@@ -45,7 +45,7 @@ int main (int argc, char ** argv)
         while(fgets(buf, MAX_BUFFER, batchfile)) {
             // tokenize the input into args array
             arg = args;
-            *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
+            *arg++ = strtok(buf,SEPARATORS); // change the inputs into tokens.
 
             while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
 
@@ -63,7 +63,7 @@ int main (int argc, char ** argv)
             if(fgets (buf, MAX_BUFFER, stdin)) { // read a line
                 // tokenize the input into args array
                 arg = args;
-                *arg++ = strtok(buf,SEPARATORS);   // change the inputs into tokens.
+                *arg++ = strtok(buf,SEPARATORS); // change the inputs into tokens.
 
                 while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
 
@@ -73,8 +73,3 @@ int main (int argc, char ** argv)
         return 0;
     }
 }
-
-/*
-References:
-[1] Craig Estey, "Redirecting I/O in a custom shell program written in C", StackOverflow, Oct. 2018. [Online]. Available: https://stackoverflow.com/questions/52939356/redirecting-i-o-in-a-custom-shell-program-written-in-c. [Accessed: Mar. 14, 2023].
-*/

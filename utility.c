@@ -8,6 +8,7 @@ Student ID: 2142218
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 #include "myshell.h"
 #define MAX_BUFFER 1024                        // max line buffer
 #define MAX_ARGS 64                            // max # args
@@ -115,8 +116,9 @@ void io_redirection(int argc, char ** args) {
     char * inputfile = NULL;
     char * outputfile = NULL;
     int append = 0;
+    bool background = false;
 
-    for(int i = 0; args[i+1]; ++i) { // [1]
+    for(int i = 0; args[i+1]; ++i) {
 
         if(!strcmp(args[i], "<")) { // input redirection
             inputfile = args[i+1];
@@ -134,9 +136,13 @@ void io_redirection(int argc, char ** args) {
             args[i] = NULL;
             break;
         }
+        else if(!strcmp(args[i], "&")) { // if an '&' is in the line then background execution is set to true
+            background = true;
+            args[i] = NULL;
+        }
     }
 
-    if(inputfile != NULL || outputfile != NULL) { // [1]
+    if(inputfile != NULL || outputfile != NULL) {
         // executing command with I/O redirection
         pid_t pid = fork();
 
@@ -188,7 +194,13 @@ void io_redirection(int argc, char ** args) {
         else {
             // parent process
             int status;
-            waitpid(pid, &status, 0);
+            printf("parent process, pid: %d, complete", pid);
+ 
+            // wait for the child process to complete, unless it is run in the background
+            if(!background) {
+                waitpid(pid, &status, 0);
+                printf("Child process, pid: %d, complete", pid);
+            }
         }
     }
     else {
@@ -215,16 +227,11 @@ Command internal_cmds[] = {
 };
 
 void cmds(char ** args, int argc) {
-    for(int i = 0; i < sizeof(internal_cmds) / sizeof(Command); ++i) {
-        if(!(strcmp(args[0], internal_cmds[i].name))) {
+    for(int i = 0; i < sizeof(internal_cmds) / sizeof(Command); ++i) { // for loop that iterates through the tokens
+        if(!(strcmp(args[0], internal_cmds[i].name))) { // if the first arg is equal to a command with the same name then that command is executed
             internal_cmds[i].func(args);
             return;
         }
     }
-    external_cmd(args);
+    external_cmd(args); // an external command is run if none of the internal commands are executed
 }
-
-/*
-References:
-[1] segmentfault, "Creating Shell in C - Piping and External Commands", StackOverflow, Jul. 2021. [Online]. Available: https://stackoverflow.com/questions/68289675/creating-shell-in-c-piping-and-external-commands. [Accessed: Mar. 13, 2023].
-*/
