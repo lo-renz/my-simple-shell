@@ -49,6 +49,8 @@ int main (int argc, char ** argv)
 
             while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
 
+            char help_path[MAX_BUFFER];
+            getcwd(help_path, sizeof(help_path));
             io_redirection(argc, args);
         }
         // close the batchfile
@@ -66,6 +68,8 @@ int main (int argc, char ** argv)
                 *arg++ = strtok(buf,SEPARATORS); // change the inputs into tokens.
 
                 while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
+                char help_path[MAX_BUFFER];
+                getcwd(help_path, sizeof(help_path));
 
                 io_redirection(argc, args);
             }
