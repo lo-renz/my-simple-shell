@@ -13,16 +13,7 @@ This code can be used for teaching purposes, but no warranty,
 explicit or implicit, is provided.
 *******************************************************************/
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include "myshell.h"
-#define MAX_BUFFER 1024                        // max line buffer
-#define MAX_ARGS 64                            // max # args
-#define SEPARATORS " \t\n"                     // token separators
-extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
 
 int main (int argc, char ** argv)
 {
@@ -57,6 +48,15 @@ int main (int argc, char ** argv)
         fclose(batchfile);
     }
     else {
+        // this code is to get the absolute path for the readme file
+        // used for the help command
+        char abpath[MAX_BUFFER]; // the absolute path for help()
+        getcwd(abpath, sizeof(abpath));
+        char command[MAX_BUFFER] = "";
+        strcat(command, "cat ");
+        strcat(command, abpath);
+        strcat(command, "/../manual/readme | more");
+
         while(!feof(stdin)) { 
             /* get command line from input */
             sprintf(prompt, "%s%s ", getcwd(NULL, 0), " ->"); // adding the cwd to the prompt
@@ -68,8 +68,10 @@ int main (int argc, char ** argv)
                 *arg++ = strtok(buf,SEPARATORS); // change the inputs into tokens.
 
                 while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
-                char help_path[MAX_BUFFER];
-                getcwd(help_path, sizeof(help_path));
+
+                if(!strcmp(args[0], "help")) { // implementation of help command for the manual
+                    system(command);
+                }
 
                 io_redirection(argc, args);
             }

@@ -3,18 +3,7 @@ Student Name: Renso Guilalas
 Student ID: 2142218
 */
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <stdbool.h>
 #include "myshell.h"
-#define MAX_BUFFER 1024                        // max line buffer
-#define MAX_ARGS 64                            // max # args
-#define SEPARATORS " \t\n"                     // token separators
-extern char ** environ;                        // array of char *, terminated by NULL // from lab_04 
-
 
 // print the current working directory.
 void pwd() {
@@ -81,7 +70,6 @@ void echo(char ** args) {
 
 // display the user manual using the more filter.
 void help() {
-
 }
 
 // pause operation of the shell until "Enter" is pressed.
@@ -223,14 +211,10 @@ Command internal_cmds[] = {
     {"dir", dir},
     {"environ", environ_cmd},
     {"echo", echo},
-    {"help", help},
     {"pause", pause_cmd}
 };
 
 void cmds(char ** args, int argc) {
-    char help_path[MAX_BUFFER];
-    getcwd(help_path, sizeof(help_path));
-    printf("this is the help_path: %s\n", help_path);
     for(int i = 0; i < sizeof(internal_cmds) / sizeof(Command); ++i) { // for loop that iterates through the tokens
         if(!(strcmp(args[0], internal_cmds[i].name))) { // if the first arg is equal to a command with the same name then that command is executed
             internal_cmds[i].func(args);
