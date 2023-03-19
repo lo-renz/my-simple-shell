@@ -73,10 +73,11 @@ THE DIFFERENCES BETWEEN BACKGROUND AND FOREGROUND EXECUTION [4]
 
 
 References:
-[1] A. Robbins, "Bash Pocket Reference," O'Reilly Media, 2016. [Online]. Available: https://books.google.ie/books?hl=en&lr=&id=dzBCH3x6fYEC&oi=fnd&pg=PT7&dq=bash&ots=iXm-scjsFW&sig=vdaiZZqTVGr7ZhBonItTBEzXkuM&redir_esc=y#v=onepage&q=environment%20variables&f=false
-[2] Y. Liu, Y. Yue, L. Guo, UNIX I/O System, I/O Redirection and Piping. Springer, Berlin, Heidelberg, 2011, doi: 10.1007/978-3-642-20432-6_7.
-[3] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. Hoboken, NJ, USA: John Wiley & Sons, Inc., 2018.
-[4] E. Walia, OPERATING SYSTEM CONCEPTS, 2nd ed. New Delhi: Kanna Book Publishing Co., 2019. [Online]. Available: https://books.google.ie/books?id=saoEEAAAQBAJ&printsec=copyright&source=gbs_pub_info_r#v=onepage&q&f=false
+
+        [1] A. Robbins, "Bash Pocket Reference," O'Reilly Media, 2016. [Online]. Available: https://books.google.ie/books?hl=en&lr=&id=dzBCH3x6fYEC&oi=fnd&pg=PT7&dq=bash&ots=iXm-scjsFW&sig=vdaiZZqTVGr7ZhBonItTBEzXkuM&redir_esc=y#v=onepage&q=environment%20variables&f=false
+        [2] Y. Liu, Y. Yue, L. Guo, UNIX I/O System, I/O Redirection and Piping. Springer, Berlin, Heidelberg, 2011, doi: 10.1007/978-3-642-20432-6_7.
+        [3] A. Silberschatz, P. B. Galvin, and G. Gagne, Operating System Concepts, 10th ed. Hoboken, NJ, USA: John Wiley & Sons, Inc., 2018.
+        [4] E. Walia, OPERATING SYSTEM CONCEPTS, 2nd ed. New Delhi: Kanna Book Publishing Co., 2019. [Online]. Available: https://books.google.ie/books?id=saoEEAAAQBAJ&printsec=copyright&source=gbs_pub_info_r#v=onepage&q&f=false
 
 Acknowledgement of the DCU Academic Integrity Policy:
 I understand that the University regards breaches of academic integrity and plagiarism as grave and serious.
