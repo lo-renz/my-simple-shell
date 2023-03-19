@@ -59,11 +59,13 @@ I/O REDIRECTION [2]
                 Whereas with the use of two '>' symbols is for appending the output to the file.
  
 PROCESS CONCEPT [3]
+
         The process concept of a shell refers to how the shell manages and interacts with processes on the system. 
         The shell creates a new process to execute a command when a user issues a command to the shell.
         The shell can then manage and control the processes it creates, including starting, stopping, and monitoring their execution.
 
 THE DIFFERENCES BETWEEN BACKGROUND AND FOREGROUND EXECUTION [4]
+
         Background execution refers to a process that is not visible to the user, performing tasks that do not require immediate attention, and has lower priority for resource allocation and CPU time.
         Foreground execution refers to a process that is visible to the user, actively running, and has a higher priority for resource allocation and CPU time.
 
