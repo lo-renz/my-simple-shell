@@ -1,7 +1,14 @@
 /*
 Student Name: Renso Guilalas
 Student ID: 2142218
-*/
+******************************************************************
+I understand that the University regards breaches of academic integrity and plagiarism as grave and serious.
+I have read and understood the DCU Academic Integrity and Plagiarism Policy. I accept the penalties that may be imposed should I engage in practice or practices that breach this policy.
+
+I have identified and included the source of all facts, ideas, opinions and viewpoints of others in the assignment references. Direct quotations, paraphrasing, discussion of ideas from books, journal articles, internet sources, module text, or any other source whatsoever are acknowledged and the sources cited are identified in the assignment references.
+
+I declare that this material, which I now submit for assessment, is entirely my own work and has not been taken from the work of others save and to the extent that such work has been cited and acknowledged within the text of my work.
+******************************************************************/
 
 #include "myshell.h"
 
@@ -74,7 +81,7 @@ void pause_cmd() {
     while(getchar() != '\n'); // waiting for the user to press "enter"
 }
 
-// [1] 
+// to execute ay external commands.
 void external_cmd(char ** args) {
     pid_t pid = 0;
     int status;
@@ -95,7 +102,7 @@ void external_cmd(char ** args) {
         perror("Error!");
     }
     else{
-        if(!background) {
+        if(!background) { // wait for the child process to complete, unless it is run in the background.
             waitpid(pid, &status, 0);
         }
     }
@@ -113,7 +120,9 @@ void io_redirection(int argc, char ** args) {
     int append = 0;
     bool background = false;
 
-    for(int i = 0; args[i+1]; ++i) {
+    // if I/O redirection is detected in the command line, the inputfile or outputfile is assigned accordingly and the operators are removed from the command line.
+    // if background execution is detected, the background is set to true and the ampersand (&) is removed from the command line.
+    for(int i = 0; args[i+1]; ++i) { 
 
         if(!strcmp(args[i], "<")) { // input redirection
             inputfile = args[i+1];
@@ -163,10 +172,10 @@ void io_redirection(int argc, char ** args) {
                 // output redirection
                 FILE * fp;
 
-                if(append) {
+                if(append) { // appending to the file
                     fp = fopen(outputfile, "a");
                 }
-                else {
+                else { // truncating to the file
                     fp = fopen(outputfile, "w");
                 }
 
@@ -187,10 +196,9 @@ void io_redirection(int argc, char ** args) {
             exit(EXIT_FAILURE);
         }
         else {
-            // parent process
             int status;
  
-            // wait for the child process to complete, unless it is run in the background
+            // wait for the child process to complete, unless it is run in the background.
             if(!background) {
                 waitpid(pid, &status, 0);
             }
@@ -202,6 +210,7 @@ void io_redirection(int argc, char ** args) {
     }
 }
 
+// struct for the internal commands
 typedef struct {
     char * name;
     void (*func)(char ** argv);
@@ -218,7 +227,7 @@ Command internal_cmds[] = {
     {"pause", pause_cmd}
 };
 
-void cmds(char ** args, int argc) {
+void cmds(char ** args, int argc) { // the function that executes either the internal or external commands.
     for(int i = 0; i < sizeof(internal_cmds) / sizeof(Command); ++i) { // for loop that iterates through the tokens
         if(!(strcmp(args[0], internal_cmds[i].name))) { // if the first arg is equal to a command with the same name then that command is executed
             internal_cmds[i].func(args);

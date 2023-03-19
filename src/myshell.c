@@ -1,7 +1,7 @@
 /*
 Student Name: Renso Guilalas
 Student ID: 21422182
-********************************************************************
+*******************************************************************
 version: 1.0
 date:    December 2003
 author:  Ian G Graham
@@ -11,6 +11,13 @@ ian.graham@griffith.edu.au
 copyright (c) Ian G Graham, 2003. All rights reserved.
 This code can be used for teaching purposes, but no warranty,
 explicit or implicit, is provided.
+*******************************************************************
+I understand that the University regards breaches of academic integrity and plagiarism as grave and serious.
+I have read and understood the DCU Academic Integrity and Plagiarism Policy. I accept the penalties that may be imposed should I engage in practice or practices that breach this policy.
+
+I have identified and included the source of all facts, ideas, opinions and viewpoints of others in the assignment references. Direct quotations, paraphrasing, discussion of ideas from books, journal articles, internet sources, module text, or any other source whatsoever are acknowledged and the sources cited are identified in the assignment references.
+
+I declare that this material, which I now submit for assessment, is entirely my own work and has not been taken from the work of others save and to the extent that such work has been cited and acknowledged within the text of my work.
 *******************************************************************/
 
 #include "myshell.h"
@@ -20,13 +27,13 @@ int main (int argc, char ** argv)
     char buf[MAX_BUFFER];                      // line buffer
     char * args[MAX_ARGS];                     // pointers to arg strings
     char ** arg;                               // working pointer thru args
-    char prompt[MAX_BUFFER];                    // shell prompt
+    char prompt[MAX_BUFFER];                   // shell prompt
     /* keep reading input until "quit" command or EOF of redirected input */
 
     // to check if there is a batchfile,
     // check if a command line argument is provided
     if (argc > 1) {
-        // open the batch file
+        // open the batchfile and read it
         FILE *batchfile = fopen(argv[1], "r");
         if (batchfile == NULL) {
             perror("Failed to open batchfile");
@@ -40,9 +47,7 @@ int main (int argc, char ** argv)
 
             while((*arg++ = strtok(NULL, SEPARATORS))); // last entry will be NULL
 
-            char help_path[MAX_BUFFER];
-            getcwd(help_path, sizeof(help_path));
-            io_redirection(argc, args);
+            io_redirection(argc, args); // the function which checks for I/O redirection, as well as running either the internal or external commands
         }
         // close the batchfile
         fclose(batchfile);
