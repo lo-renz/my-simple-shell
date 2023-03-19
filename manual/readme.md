@@ -1,6 +1,7 @@
 myshell(1)                                                                              General Commands Manual
 
 NAME
+
         myshell - simple shell
 
 OPERATIONS AND COMMANDS
@@ -20,6 +21,7 @@ OPERATIONS AND COMMANDS
         help - Display the manual.
 
 ENVIRONMENT CONCEPTS [1]
+
         The environment is an array of strings. An array which contains information of the current state of your terminal in name-value pairs.
         This would include information such as the current user, your previous working directory, the current working directory, etc.
         When command like 'cd' is executed the name-value pairs would update to contain the updated information. 
@@ -29,6 +31,7 @@ ENVIRONMENT CONCEPTS [1]
         Replace [command] with 'environ' to view information on your current environment.
 
 I/O REDIRECTION [2]
+
         Input Redirection
                 Input redirection is taking input from a different source. 
                 Input redirection can be applied with this terminal by the form:
