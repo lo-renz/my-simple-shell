@@ -68,10 +68,6 @@ void echo(char ** args) {
     printf("\n");
 }
 
-// display the user manual using the more filter.
-void help() {
-}
-
 // pause operation of the shell until "Enter" is pressed.
 void pause_cmd() {
     printf("Press enter to continue...");
@@ -82,6 +78,14 @@ void pause_cmd() {
 void external_cmd(char ** args) {
     pid_t pid = 0;
     int status;
+    bool background = false; // for background execution
+
+    for(int i = 0; args[i+1]; ++i) {
+        if(!strcmp(args[i], "&")) {
+            background = true;
+            args[i] = NULL;
+        }
+    }
 
     pid = fork();
     if(pid == 0) {
@@ -91,7 +95,9 @@ void external_cmd(char ** args) {
         perror("Error!");
     }
     else{
-        waitpid(pid, &status, 0);
+        if(!background) {
+            waitpid(pid, &status, 0);
+        }
     }
 }
 
@@ -183,12 +189,10 @@ void io_redirection(int argc, char ** args) {
         else {
             // parent process
             int status;
-            printf("parent process, pid: %d, complete", pid);
  
             // wait for the child process to complete, unless it is run in the background
             if(!background) {
                 waitpid(pid, &status, 0);
-                printf("Child process, pid: %d, complete", pid);
             }
         }
     }

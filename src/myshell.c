@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
     char prompt[MAX_BUFFER];                    // shell prompt
     /* keep reading input until "quit" command or EOF of redirected input */
 
-    // to check if there is a batchfile
+    // to check if there is a batchfile,
     // check if a command line argument is provided
     if (argc > 1) {
         // open the batch file
@@ -55,7 +55,7 @@ int main (int argc, char ** argv)
         char command[MAX_BUFFER] = "";
         strcat(command, "cat ");
         strcat(command, abpath);
-        strcat(command, "/../manual/readme | more");
+        strcat(command, "/../manual/readme.md | more -p"); // command for the help page, which pipes the contents of readme.md into the more command, displaying the contents of the file in the terminal window. 
 
         while(!feof(stdin)) { 
             /* get command line from input */
@@ -73,7 +73,7 @@ int main (int argc, char ** argv)
                     system(command);
                 }
 
-                io_redirection(argc, args);
+                io_redirection(argc, args); // the function which checks for I/O redirection, as well as running either the internal or external commands
             }
         }
         return 0;
